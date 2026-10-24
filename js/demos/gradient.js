@@ -15,9 +15,9 @@
 
   const DOMAIN = 2.2; // x,y in [-DOMAIN, DOMAIN]
   const OPTS = [
-    { key: "sgd", name: "SGD", color: "#ff3333" },
-    { key: "mom", name: "Momentum", color: "#ffb000" },
-    { key: "adam", name: "Adam", color: "#00ff41" },
+    { key: "sgd", name: "SGD", color: "#F87171" },
+    { key: "mom", name: "Momentum", color: "#60A5FA" },
+    { key: "adam", name: "Adam", color: "#F2A93B" },
   ];
 
   function makeStates(x0, y0) {

@@ -1,173 +1,94 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ML demos · Harithas Harikaran</title>
-  <meta name="description" content="Six small machine-learning demos with the maths behind them, running in the browser. No server, no tracking." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23050805'/%3E%3Cpath d='M7 10l7 6-7 6M17 23h9' fill='none' stroke='%2300ff41' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
-  <link rel="stylesheet" href="css/style.css" />
+  <meta name="description" content="Six small machine-learning demos that run entirely in the browser, each on its own page with the interactive part next to the maths behind it.">
+  <link rel="canonical" href="https://harispaartan.github.io/ml-demos/">
+  <meta name="theme-color" content="#0B0F14">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ML demos · Harithas Harikaran">
+  <meta property="og:description" content="Six small machine-learning demos that run entirely in the browser, each on its own page with the interactive part next to the maths behind it.">
+  <meta property="og:url" content="https://harispaartan.github.io/ml-demos/">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/site.css">
+  <script>try{if(localStorage.getItem('hh-theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
 </head>
 <body>
-  <div class="crt-overlay" aria-hidden="true"></div>
-  <div class="scanlines" aria-hidden="true"></div>
-
-  <!-- ============ NAV ============ -->
-  <nav class="nav">
-    <div class="nav-inner term-bar">
-      <div class="term-dots"><span></span><span></span><span></span></div>
-      <span class="term-title">harithas@ml-demos — bash</span>
-      <span class="nav-status" id="nav-clock">[SYS: ONLINE]</span>
-    </div>
-    <div class="nav-cmd">
-      <a href="#home" class="logo"><span class="prompt">$</span> harithas<span class="accent">_</span>dev</a>
-      <ul class="nav-links">
-        <li><a href="#projects"><span class="cmd">./projects</span></a></li>
-      </ul>
-      <a href="https://harispaartan.github.io/" class="btn btn-sm">Back to portfolio</a>
-    </div>
-  </nav>
-
-  <!-- ============ HERO ============ -->
-  <header id="home" class="hero">
-    <div class="hero-bg" id="hero-canvas-wrap"><canvas id="hero-canvas"></canvas></div>
-    <div class="hero-content term-window">
-      <div class="term-bar">
-        <div class="term-dots"><span></span><span></span><span></span></div>
-        <span class="term-title">~/ml-demos — zsh</span>
-      </div>
-      <div class="term-body hero-body">
-        <p class="hero-kicker"><span class="prompt">$</span> cat intro.txt</p>
-        <h1><span class="accent glow">ML demos, in the browser</span></h1>
-        <p class="hero-sub">
-          <span class="prompt">&gt;</span> Six small machine-learning demos with the maths behind them. No server, no tracking.
-        </p>
-        <div class="hero-cta">
-          <a href="#projects" class="btn">$ ls ./projects/</a>
-        </div>
-        <div class="hero-stats">
-          <div><span class="stat-num">6</span><span class="stat-label">binaries</span></div>
-          <div><span class="stat-num">6</span><span class="stat-label">man_pages</span></div>
-        </div>
-        <p class="boot-line" id="boot-line"><span class="cursor-blink">█</span></p>
-      </div>
-    </div>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <nav class="wrap nav" aria-label="Main">
+      <a class="brand" href="./"><span class="mark" aria-hidden="true">ML</span><span>ML demos</span></a>
+      <span class="spacer"></span>
+      <a class="nav-link portfolio" href="https://harispaartan.github.io/">harispaartan.github.io</a>
+      <button id="theme-toggle" class="icon-btn" type="button" aria-pressed="false" aria-label="Switch to light theme" title="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/><circle cx="12" cy="12" r="4"/></svg></button>
+    </nav>
   </header>
-
-  <main>
-    <!-- ============ PROJECTS ============ -->
-    <section id="projects" class="section">
-      <div class="term-window">
-        <div class="term-bar">
-          <div class="term-dots"><span></span><span></span><span></span></div>
-          <span class="term-title">01_projects — ls -la ./bin/</span>
-        </div>
-        <div class="term-body">
-          <h2 class="section-title"><span class="section-num">[01]</span> executables</h2>
-          <p class="section-sub"><span class="prompt">$</span> Click any binary to <code>./run --demo</code> or read the <code>man</code> page (math &amp; theory).</p>
-
-          <div class="projects-grid">
-            <article class="project-card" data-project="rag">
-              <div class="project-header">
-                <span class="file-perm">-rwxr-xr-x</span>
-                <span class="file-name">rag_qa_engine</span>
-              </div>
-              <p>Retrieval-Augmented Generation: embed docs → cosine retrieve → ground LLM output in sources.</p>
-              <div class="tags sm"><span>tf-idf</span><span>embeddings</span><span>cosine_sim</span><span>llm</span></div>
-              <span class="card-cta">$ ./rag_qa_engine --demo</span>
-            </article>
-
-            <article class="project-card" data-project="attention">
-              <div class="project-header">
-                <span class="file-perm">-rwxr-xr-x</span>
-                <span class="file-name">attention_viz</span>
-              </div>
-              <p>Self-attention debugger: type a sentence, watch Q·Kᵀ heatmap + softmax weights render live.</p>
-              <div class="tags sm"><span>self_attention</span><span>softmax</span><span>gpt_arch</span></div>
-              <span class="card-cta">$ ./attention_viz --live</span>
-            </article>
-
-            <article class="project-card" data-project="lora">
-              <div class="project-header">
-                <span class="file-perm">-rwxr-xr-x</span>
-                <span class="file-name">lora_calc</span>
-              </div>
-              <p>PEFT memory profiler: tune rank r, model size — watch trainable params &amp; GPU VRAM collapse.</p>
-              <div class="tags sm"><span>peft</span><span>low_rank</span><span>finetune</span><span>qlora</span></div>
-              <span class="card-cta">$ ./lora_calc --rank 16</span>
-            </article>
-
-            <article class="project-card" data-project="gradient">
-              <div class="project-header">
-                <span class="file-perm">-rwxr-xr-x</span>
-                <span class="file-name">grad_descent</span>
-              </div>
-              <p>Optimizer race on a non-convex loss surface. SGD vs Momentum vs Adam — tweak η live.</p>
-              <div class="tags sm"><span>optimization</span><span>sgd</span><span>adam</span><span>loss_surface</span></div>
-              <span class="card-cta">$ ./grad_descent --race</span>
-            </article>
-
-            <article class="project-card" data-project="kmeans">
-              <div class="project-header">
-                <span class="file-perm">-rwxr-xr-x</span>
-                <span class="file-name">kmeans_seg</span>
-              </div>
-              <p>Unsupervised clustering sandbox: drop points, step through Lloyd's algorithm, watch centroids converge.</p>
-              <div class="tags sm"><span>clustering</span><span>unsupervised</span><span>lloyd</span></div>
-              <span class="card-cta">$ ./kmeans_seg --step</span>
-            </article>
-
-            <article class="project-card" data-project="sentiment">
-              <div class="project-header">
-                <span class="file-perm">-rwxr-xr-x</span>
-                <span class="file-name">naive_bayes_nlp</span>
-              </div>
-              <p>From-scratch text classifier: per-word log-odds chips, negation flip, sigmoid verdict.</p>
-              <div class="tags sm"><span>nlp</span><span>bayes</span><span>classification</span></div>
-              <span class="card-cta">$ ./naive_bayes_nlp --analyze</span>
-            </article>
-          </div>
-        </div>
-      </div>
+  <main id="main" class="wrap">
+    <section class="hero">
+      <p class="eyebrow">// machine learning, in the browser</p>
+      <h1>Six small ML demos, each with the maths behind it</h1>
+      <p class="lead">Every demo runs <strong>entirely client-side</strong>: the retrieval, the attention weights, the optimiser steps and the clustering are computed in JavaScript as you interact. Each one has its own page with the demo on the left and the theory on the right.</p>
+    </section>
+    <section class="grid" aria-label="Demos">
+      <a class="card" href="rag.html">
+        <span class="num">01 / Retrieval-augmented generation</span>
+        <h3>RAG document Q&amp;A</h3>
+        <p>Type a question, watch TF-IDF retrieval rank a small knowledge base by cosine similarity, and see an answer grounded in the top passages.</p>
+        <span class="tags"><span>TF-IDF</span><span>cosine similarity</span><span>RAG</span></span>
+        <span class="cta">Open the demo →</span>
+      </a>
+      <a class="card" href="attention.html">
+        <span class="num">02 / Transformer self-attention</span>
+        <h3>Attention visualizer</h3>
+        <p>Type a sentence and see the Q·Kᵀ scores turn into a softmax heatmap, with a causal mask and a temperature control.</p>
+        <span class="tags"><span>scaled dot-product attention</span><span>softmax</span><span>causal mask</span></span>
+        <span class="cta">Open the demo →</span>
+      </a>
+      <a class="card" href="lora.html">
+        <span class="num">03 / Parameter-efficient fine-tuning</span>
+        <h3>LoRA calculator</h3>
+        <p>Pick a model and a rank and see how many parameters LoRA trains and how much GPU memory full fine-tuning, LoRA and QLoRA need.</p>
+        <span class="tags"><span>low-rank adapters</span><span>QLoRA</span><span>memory accounting</span></span>
+        <span class="cta">Open the demo →</span>
+      </a>
+      <a class="card" href="gradient.html">
+        <span class="num">04 / Optimisers on a loss surface</span>
+        <h3>Gradient descent playground</h3>
+        <p>SGD, momentum and Adam race across a non-convex loss surface while you change the learning rate.</p>
+        <span class="tags"><span>SGD</span><span>momentum</span><span>Adam</span></span>
+        <span class="cta">Open the demo →</span>
+      </a>
+      <a class="card" href="kmeans.html">
+        <span class="num">05 / Unsupervised segmentation</span>
+        <h3>K-means clustering</h3>
+        <p>Click to add points or generate blobs, choose k, and step through Lloyd&#x27;s algorithm with k-means++ initialisation.</p>
+        <span class="tags"><span>Lloyd&#x27;s algorithm</span><span>k-means++</span><span>silhouette</span></span>
+        <span class="cta">Open the demo →</span>
+      </a>
+      <a class="card" href="sentiment.html">
+        <span class="num">06 / A classifier from scratch</span>
+        <h3>Naive Bayes sentiment</h3>
+        <p>A log-odds lexicon classifier with negation handling: every word becomes a chip that shows how it pushed the verdict.</p>
+        <span class="tags"><span>Bayes&#x27; theorem</span><span>log-odds</span><span>Laplace smoothing</span></span>
+        <span class="cta">Open the demo →</span>
+      </a>
+    </section>
+    <section class="section">
+      <h2>How it is built</h2>
+      <ul>
+        <li>Plain HTML, CSS and JavaScript, no framework and no build step for the demos themselves; the pages are generated from one template by a small Python script.</li>
+        <li>Each demo is one self-contained module in <code>js/demos/</code> that draws into its page and returns a cleanup function.</li>
+        <li>Formulas are typeset with a self-hosted copy of KaTeX; fonts are self-hosted too, so no request leaves the page.</li>
+        <li>Light and dark theme, keyboard focus styles and reduced-motion support shared with my portfolio.</li>
+      </ul>
     </section>
   </main>
-
-  <footer class="footer">
-    <p><a href="https://harispaartan.github.io/">Harithas Harikaran</a> · all demos run client-side</p>
-    <p class="footer-meta">uptime: <span id="footer-uptime">00:00:00</span> · mem: OK · gpu: simulated</p>
+  <footer class="wrap site-footer">
+    <span>© 2026 Harithas Harikaran · all demos run in your browser, nothing is sent anywhere</span>
+    <span><a href="https://github.com/HARISPAARTAN/ml-demos">Source on GitHub</a></span>
   </footer>
-
-  <!-- ============ PROJECT MODAL ============ -->
-  <div class="modal-overlay" id="modal-overlay" hidden>
-    <div class="modal term-window" role="dialog" aria-modal="true">
-      <div class="term-bar">
-        <div class="term-dots"><span></span><span></span><span></span></div>
-        <span class="term-title" id="modal-title-bar">process — running</span>
-        <button class="modal-close" id="modal-close" aria-label="Close">[x]</button>
-      </div>
-      <div class="modal-head">
-        <h2 id="modal-title"></h2>
-        <div class="modal-tabs">
-          <button class="tab active" data-tab="demo">$ ./run --demo</button>
-          <button class="tab" data-tab="theory">$ man theory</button>
-        </div>
-      </div>
-      <div class="modal-body">
-        <div id="tab-demo" class="tab-panel active"></div>
-        <div id="tab-theory" class="tab-panel"></div>
-      </div>
-    </div>
-  </div>
-
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-  <script defer src="js/demos/rag.js"></script>
-  <script defer src="js/demos/attention.js"></script>
-  <script defer src="js/demos/lora.js"></script>
-  <script defer src="js/demos/gradient.js"></script>
-  <script defer src="js/demos/kmeans.js"></script>
-  <script defer src="js/demos/sentiment.js"></script>
-  <script defer src="js/main.js"></script>
+  <script src="js/page.js" defer></script>
 </body>
 </html>

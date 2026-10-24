@@ -61,8 +61,8 @@
       <div class="demo-panel">
         <h4>Estimated training GPU memory (weights + grads + Adam states)</h4>
         <div class="bar-compare">
-          <div class="bc-row"><span class="bc-label">Full fine-tune</span><div class="bc-track"><div class="bc-fill" id="bar-full" style="background:linear-gradient(90deg,#ff3333,#ffb000)"></div></div><span class="bc-val" id="val-full">—</span></div>
-          <div class="bc-row"><span class="bc-label">LoRA</span><div class="bc-track"><div class="bc-fill" id="bar-lora" style="background:linear-gradient(90deg,#00cc33,#00ff41)"></div></div><span class="bc-val" id="val-lora">—</span></div>
+          <div class="bc-row"><span class="bc-label">Full fine-tune</span><div class="bc-track"><div class="bc-fill" id="bar-full" style="background:linear-gradient(90deg,#F87171,#60A5FA)"></div></div><span class="bc-val" id="val-full">—</span></div>
+          <div class="bc-row"><span class="bc-label">LoRA</span><div class="bc-track"><div class="bc-fill" id="bar-lora" style="background:linear-gradient(90deg,#D9952F,#F2A93B)"></div></div><span class="bc-val" id="val-lora">—</span></div>
         </div>
         <p class="demo-desc" style="margin:0.8rem 0 0" id="lora-verdict"></p>
       </div>`;
@@ -117,7 +117,7 @@
 
       const fits = loraMem <= 24e9;
       root.querySelector("#lora-verdict").innerHTML = fits
-        ? `[OK] <strong style="color:#00ff41">Fits on a single 24 GB consumer GPU (RTX 4090)</strong> — a ${(fullMem / loraMem).toFixed(0)}× memory reduction vs full fine-tuning.`
+        ? `[OK] <strong style="color:#F2A93B">Fits on a single 24 GB consumer GPU (RTX 4090)</strong> — a ${(fullMem / loraMem).toFixed(0)}× memory reduction vs full fine-tuning.`
         : `⚠️ Needs ${gb(loraMem)} — try a smaller model, lower rank, or enable QLoRA 4-bit quantization.`;
     }
 

@@ -57,7 +57,8 @@
   function colorFor(w) {
     // 0 → deep navy, 1 → bright blue/purple
     const a = Math.min(1, w * 1.6);
-    return `rgba(0, ${180 + a * 75 | 0}, 65, ${0.1 + a * 0.88})`;
+    const pct = Math.round(8 + a * 92);
+    return `background:color-mix(in srgb, var(--accent) ${pct}%, var(--surface-2));color:${a > 0.5 ? '#1A1200' : 'var(--text)'}`;
   }
 
   function renderDemo(root) {
@@ -107,7 +108,7 @@
       A.forEach((row, i) => {
         html += `<tr><th style="text-align:right">${tokens[i]}</th>`;
         row.forEach((w) => {
-          html += `<td><div class="heat-cell" style="background:${colorFor(w)}" title="weight ${w.toFixed(3)}">${w < 0.005 ? "" : w.toFixed(2)}</div></td>`;
+          html += `<td><div class="heat-cell" style="${colorFor(w)}" title="weight ${w.toFixed(3)}">${w < 0.005 ? "" : w.toFixed(2)}</div></td>`;
         });
         html += "</tr>";
       });

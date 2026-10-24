@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gradient descent playground · ML demos</title>
+  <meta name="description" content="SGD, momentum and Adam race across a non-convex loss surface while you change the learning rate.">
+  <link rel="canonical" href="https://harispaartan.github.io/ml-demos/gradient.html">
+  <meta name="theme-color" content="#0B0F14">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Gradient descent playground · ML demos">
+  <meta property="og:description" content="SGD, momentum and Adam race across a non-convex loss surface while you change the learning rate.">
+  <meta property="og:url" content="https://harispaartan.github.io/ml-demos/gradient.html">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/site.css">
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <script>try{if(localStorage.getItem('hh-theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
+</head>
+<body data-demo="gradient">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <nav class="wrap nav" aria-label="Main">
+      <a class="brand" href="./"><span class="mark" aria-hidden="true">ML</span><span>ML demos</span><small>/ Gradient descent playground</small></a>
+      <span class="spacer"></span>
+      <a class="nav-link portfolio" href="https://harispaartan.github.io/">harispaartan.github.io</a>
+      <button id="theme-toggle" class="icon-btn" type="button" aria-pressed="false" aria-label="Switch to light theme" title="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/><circle cx="12" cy="12" r="4"/></svg></button>
+    </nav>
+  </header>
+  <main id="main" class="wrap">
+    <div class="demo-head">
+      <div class="intro">
+        <p class="eyebrow">04 / 06 · Optimisers on a loss surface</p>
+        <h1>Gradient descent playground</h1>
+        <p>SGD, momentum and Adam race across a non-convex loss surface while you change the learning rate.</p>
+        <div class="tags"><span class="tag">SGD</span><span class="tag">momentum</span><span class="tag">Adam</span></div>
+      </div>
+      <nav class="pager" aria-label="Other demos">
+        <a href="lora.html" rel="prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg> LoRA calculator</a>
+        <a href="kmeans.html" rel="next">K-means clustering <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+      </nav>
+    </div>
+    <div class="layout">
+      <section class="panel" aria-labelledby="demo-title">
+        <header><b id="demo-title">Interactive demo</b><span class="badge live">runs locally</span></header>
+        <div class="inner" id="demo"></div>
+      </section>
+      <aside class="panel" aria-labelledby="theory-title">
+        <header><b id="theory-title">The maths behind it</b><span>theory</span></header>
+        <div class="inner" id="theory"></div>
+      </aside>
+    </div>
+  </main>
+  <footer class="wrap site-footer">
+    <span>© 2026 Harithas Harikaran · all demos run in your browser, nothing is sent anywhere</span>
+    <span><a href="https://github.com/HARISPAARTAN/ml-demos">Source on GitHub</a></span>
+  </footer>
+  <script src="vendor/katex/katex.min.js"></script>
+  <script src="vendor/katex/contrib/auto-render.min.js"></script>
+  <script src="js/demos/gradient.js"></script>
+  <script src="js/page.js"></script>
+</body>
+</html>

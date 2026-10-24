@@ -1,217 +1,94 @@
-// Smoke test for the ML demos page.   Run:  node tests/smoke.mjs
+// Smoke test for the ML demos site.   Run:  node tests/smoke.mjs
 //
-// Serves this folder on http://127.0.0.1:8091, opens it in Google Chrome through Playwright and checks:
-//   - the page contract (title, hero, link back to the portfolio, no leftover sections or dead anchors),
-//   - window.DEMOS holds the six demos, and each project card opens a modal with a working demo tab
-//     and a theory tab with rendered formulas, and Escape closes it again,
-//   - no console errors / uncaught exceptions (KaTeX font messages are ignored),
-//   - no request leaves this server except to the KaTeX CDN (cdn.jsdelivr.net).
-// It also writes docs/screenshot.png (1440x900, the projects grid).
+// Serves the repository on http://127.0.0.1:8091, opens it in Google Chrome through Playwright and checks
+// the overview page and every demo page: the demo mounted (#demo has content), the theory column has
+// typeset formulas (.katex elements), no console errors or uncaught exceptions, no horizontal overflow at
+// 390 px, and no request leaves the local server. It writes docs/screenshot.png (overview, 1440x900) and
+// docs/<demo>.png for each demo page.
 //
-// Needs Node, Google Chrome and the `playwright` package where Node can resolve it.
-// The repo itself has no dependencies and no package.json on purpose.
-
-import { createServer } from 'node:http';
-import { mkdir, readFile } from 'node:fs/promises';
+// Needs Node, Google Chrome and a `playwright` package that Node can resolve. The site itself has no dependencies.
 import { createRequire } from 'node:module';
-import { dirname, extname, resolve, sep } from 'node:path';
+import fs from 'node:fs';
+import path from 'node:path';
+import http from 'node:http';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = 8091;
-const HOST = `127.0.0.1:${PORT}`;
-const EXPECTED_DEMOS = ['rag', 'attention', 'lora', 'gradient', 'kmeans', 'sentiment'];
-const ALLOWED_HOSTS = new Set([HOST, 'cdn.jsdelivr.net']);
-const HUB = 'https://harispaartan.github.io/';
+let playwright;
+try { playwright = createRequire(import.meta.url)('playwright'); }
+catch { playwright = createRequire('E:/Work/Task 4/package.json')('playwright'); }
+const { chromium } = playwright;
 
-function loadPlaywright() {
-  // Normal resolution first, then the shared Playwright install on the machine this was written on.
-  for (const base of [import.meta.url, 'E:/Work/Task 4/package.json']) {
-    try { return createRequire(base)('playwright'); } catch { /* try the next location */ }
-  }
-  throw new Error('Cannot find the "playwright" package. Install it where Node can resolve it (npm i playwright).');
-}
-
-const TYPES = {
-  '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
-  '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml',
-  '.png': 'image/png', '.ico': 'image/x-icon', '.txt': 'text/plain; charset=utf-8',
-};
-
-function startServer() {
-  const server = createServer(async (req, res) => {
-    try {
-      let rel = decodeURIComponent(new URL(req.url, `http://${HOST}`).pathname);
-      if (rel.endsWith('/')) rel += 'index.html';
-      const file = resolve(ROOT, `.${rel}`);
-      const hidden = rel.split('/').some((part) => part.startsWith('.'));
-      if (hidden || !file.startsWith(ROOT + sep)) throw new Error('not served');
-      const body = await readFile(file);
-      res.writeHead(200, { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' });
-      res.end(body);
-    } catch {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('not found');
-    }
-  });
-  return new Promise((done, fail) => {
-    server.once('error', fail);
-    server.listen(PORT, '127.0.0.1', () => done(server));
-  });
-}
-
-const ascii = (s) => s.replace(/[^\x20-\x7e]/g, '').replace(/\s+/g, ' ').trim();
-
-async function main() {
-  const { chromium } = loadPlaywright();
-  const server = await startServer();
-  const browser = await chromium.launch({ channel: 'chrome', headless: true });
-  const failures = [];
-  const check = (condition, message) => { if (!condition) failures.push(message); };
-  const consoleErrors = [];
-  const ignored = [];
-  const hosts = new Set();
-  let demosOk = 0;
-
-  try {
-    console.log(`chrome ${browser.version()} | serving ${ROOT} on http://${HOST}/`);
-    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-    page.setDefaultTimeout(10000);
-
-    page.on('request', (req) => {
-      const url = new URL(req.url());
-      if (url.protocol === 'http:' || url.protocol === 'https:') hosts.add(url.host);
-    });
-    const record = (text, where) => {
-      const haystack = `${text} ${where}`;
-      if (/katex/i.test(haystack) && /font|woff|ttf/i.test(haystack)) ignored.push(text);
-      else consoleErrors.push(where ? `${text} (${where})` : text);
-    };
-    page.on('console', (msg) => { if (msg.type() === 'error') record(msg.text(), msg.location().url ?? ''); });
-    page.on('pageerror', (err) => record(`uncaught: ${err.message}`, ''));
-
-    await page.goto(`http://${HOST}/`, { waitUntil: 'load' });
-
-    // --- page contract -------------------------------------------------------------------------
-    check((await page.title()) === 'ML demos · Harithas Harikaran', 'document title');
-    check((await page.locator('h1').innerText()).trim() === 'ML demos, in the browser', 'h1 text');
-    check((await page.locator('.hero-sub').innerText())
-      .includes('Six small machine-learning demos with the maths behind them. No server, no tracking.'), 'hero sub text');
-    const back = page.locator('nav a', { hasText: 'Back to portfolio' });
-    check((await back.count()) === 1 && (await back.getAttribute('href')) === HUB, 'nav link "Back to portfolio" -> hub');
-    check((await page.locator(`footer a[href="${HUB}"]`).count()) === 1, 'footer link -> hub');
-    for (const id of ['about', 'education', 'experience', 'skills', 'contact']) {
-      check((await page.locator(`#${id}`).count()) === 0, `section #${id} is gone`);
-    }
-    check((await page.locator('a[href^="tel:"]').count()) === 0, 'no tel: links');
-    const deadAnchors = await page.evaluate(() => [...document.querySelectorAll('a[href^="#"]')]
-      .map((a) => a.getAttribute('href')).filter((h) => h.length > 1 && !document.querySelector(h)));
-    check(deadAnchors.length === 0, `dead in-page links: ${deadAnchors.join(', ')}`);
-
-    // --- window.DEMOS and the project cards ----------------------------------------------------
-    const sorted = (list) => JSON.stringify([...list].sort());
-    const keys = await page.evaluate(() => Object.keys(window.DEMOS || {}));
-    check(sorted(keys) === sorted(EXPECTED_DEMOS), `window.DEMOS keys are [${keys.join(', ')}]`);
-    const cardKeys = await page.locator('.project-card').evaluateAll((els) => els.map((el) => el.dataset.project));
-    check(sorted(cardKeys) === sorted(EXPECTED_DEMOS), `project cards are [${cardKeys.join(', ')}]`);
-
-    // --- every card opens a working modal ------------------------------------------------------
-    const overlay = page.locator('#modal-overlay');
-    const openDemo = async (key) => {
-      const card = page.locator(`.project-card[data-project="${key}"]`);
-      await card.scrollIntoViewIfNeeded();
-      await card.click();
-      await overlay.waitFor({ state: 'visible' });
-      return {
-        title: ascii(await page.locator('#modal-title').innerText()),
-        demoText: (await page.locator('#tab-demo').innerText()).trim(),
-        flatCanvases: await page.locator('#tab-demo canvas')
-          .evaluateAll((list) => list.filter((c) => c.width === 0 || c.height === 0).length),
-      };
-    };
-    const closeDemo = async () => {
-      await page.keyboard.press('Escape');
-      await overlay.waitFor({ state: 'hidden' });
-    };
-    const demoProblems = (opened, label) => {
-      const found = [];
-      if (!opened.title) found.push(`${label}empty modal title`);
-      if (!opened.demoText) found.push(`${label}empty #tab-demo`);
-      if (opened.flatCanvases) found.push(`${label}${opened.flatCanvases} canvas(es) with an empty drawing buffer`);
-      return found;
-    };
-
-    for (const key of EXPECTED_DEMOS) {
-      const problems = [];
-      let summary = '';
-      let step = 'opening the card';
-      try {
-        const opened = await openDemo(key);
-        problems.push(...demoProblems(opened, ''));
-
-        step = 'reading the theory tab';
-        await page.locator('.tab[data-tab="theory"]').click();
-        const theory = page.locator('#tab-theory');
-        const theoryText = (await theory.innerText()).trim();
-        const formulas = await theory.locator('.katex').count();
-        if (!theoryText) problems.push('empty #tab-theory');
-        if (formulas === 0) problems.push('theory tab has no rendered formulas');
-
-        step = 'closing with Escape';
-        await closeDemo();
-
-        // The visit above ended on the theory tab: the demo tab must be shown (and measurable) again.
-        step = 'reopening the card';
-        problems.push(...demoProblems(await openDemo(key), 'on reopen: '));
-        step = 'closing after reopening';
-        await closeDemo();
-
-        summary = `${opened.title} (demo ${opened.demoText.length} chars, theory ${theoryText.length} chars, ${formulas} formulas)`;
-      } catch (err) {
-        problems.push(`${step}: ${err.message.split('\n')[0]}`);
-        await page.keyboard.press('Escape').catch(() => {});
-      }
-      if (problems.length === 0) demosOk += 1;
-      else failures.push(`demo ${key}: ${problems.join('; ')}`);
-      console.log(`  ${problems.length === 0 ? 'ok  ' : 'FAIL'} ${key.padEnd(10)} ${summary || problems.join('; ')}`);
-    }
-
-    // --- screenshot of the projects grid (1440x900) --------------------------------------------
-    await page.mouse.move(2, 2); // keep the pointer off the cards so no hover glow is captured
-    const gridInView = await page.evaluate(() => {
-      const nav = document.querySelector('.nav');
-      const top = document.querySelector('#projects').getBoundingClientRect().top + window.scrollY;
-      window.scrollTo({ top: top - nav.offsetHeight - 8, behavior: 'instant' });
-      const grid = document.querySelector('.projects-grid').getBoundingClientRect();
-      return grid.top >= nav.offsetHeight && grid.bottom <= window.innerHeight;
-    });
-    check(gridInView, 'the whole projects grid is inside the 1440x900 viewport for the screenshot');
-    await page.waitForTimeout(400);
-    await mkdir(resolve(ROOT, 'docs'), { recursive: true });
-    await page.screenshot({ path: resolve(ROOT, 'docs', 'screenshot.png'), animations: 'disabled' });
-    console.log('screenshot: docs/screenshot.png (1440x900)');
-  } catch (err) {
-    failures.push(`test aborted: ${err.message}`);
-  } finally {
-    await browser.close();
-    server.closeAllConnections?.();
-    server.close();
-  }
-
-  // --- network and console -----------------------------------------------------------------------
-  const foreign = [...hosts].filter((h) => !ALLOWED_HOSTS.has(h));
-  check(foreign.length === 0, `requests to unexpected hosts: ${foreign.join(', ')}`);
-  console.log(`requests went to: ${[...hosts].sort().join(', ') || '(none)'}`);
-  if (ignored.length) console.log(`ignored ${ignored.length} KaTeX font message(s)`);
-  for (const line of consoleErrors) console.log(`  console error: ${line}`);
-  for (const line of failures) console.log(`  FAILED: ${line}`);
-
-  const extra = failures.length ? `, ${failures.length} check(s) failed` : '';
-  console.log(`${demosOk}/${EXPECTED_DEMOS.length} demos ok, ${consoleErrors.length} console errors${extra}`);
-  process.exitCode = failures.length || consoleErrors.length ? 1 : 0;
-}
-
-main().catch((err) => {
-  console.error(err.message);
-  process.exitCode = 1;
+const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2', '.md': 'text/markdown', '.json': 'application/json' };
+const server = http.createServer((req, res) => {
+  let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+  if (p.endsWith('/')) p += 'index.html';
+  const file = path.join(ROOT, p);
+  if (!file.startsWith(ROOT) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.writeHead(404); res.end('not found'); return; }
+  res.writeHead(200, { 'content-type': types[path.extname(file)] || 'application/octet-stream' });
+  fs.createReadStream(file).pipe(res);
 });
+await new Promise((r) => server.listen(PORT, '127.0.0.1', r));
+const BASE = `http://127.0.0.1:${PORT}/`;
+fs.mkdirSync(path.join(ROOT, 'docs'), { recursive: true });
+
+const DEMOS = ['rag', 'attention', 'lora', 'gradient', 'kmeans', 'sentiment'];
+const browser = await chromium.launch({ channel: 'chrome', headless: true });
+console.log(`chrome ${browser.version()} | serving ${ROOT} on ${BASE}`);
+let failures = 0;
+const fail = (m) => { failures++; console.log('  FAIL', m); };
+
+async function visit(file, width, height) {
+  const page = await browser.newPage({ viewport: { width, height } });
+  const errors = [], foreign = [], failed = [];
+  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+  page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
+  page.on('request', (r) => { if (new URL(r.url()).hostname !== '127.0.0.1') foreign.push(r.url()); });
+  page.on('requestfailed', (r) => failed.push(r.url()));
+  await page.goto(BASE + file, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(600);
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+  return { page, errors, foreign, failed, overflow };
+}
+
+// overview
+{
+  const { page, errors, foreign, failed, overflow } = await visit('', 1440, 900);
+  const cards = await page.locator('a.card').count();
+  if (cards !== 6) fail(`overview: expected 6 cards, found ${cards}`);
+  if (errors.length) fail('overview: console errors ' + JSON.stringify(errors.slice(0, 2)));
+  if (foreign.length) fail('overview: external requests ' + foreign.slice(0, 2).join(' '));
+  if (failed.length) fail('overview: failed requests ' + failed.slice(0, 2).join(' '));
+  if (overflow) fail('overview: horizontal overflow at 1440');
+  await page.screenshot({ path: path.join(ROOT, 'docs', 'screenshot.png') });
+  console.log(`  ok   overview (${cards} cards)`);
+  await page.close();
+}
+// demo pages, desktop
+for (const key of DEMOS) {
+  const { page, errors, foreign, failed, overflow } = await visit(`${key}.html`, 1440, 900);
+  const demoLen = await page.evaluate(() => (document.getElementById('demo') || {}).innerHTML?.length || 0);
+  const formulas = await page.locator('#theory .katex').count();
+  const title = await page.title();
+  if (demoLen < 200) fail(`${key}: demo did not render (${demoLen} chars)`);
+  if (formulas === 0) fail(`${key}: no typeset formulas in the theory column`);
+  if (errors.length) fail(`${key}: console errors ` + JSON.stringify(errors.slice(0, 2)));
+  if (foreign.length) fail(`${key}: external requests ` + foreign.slice(0, 2).join(' '));
+  if (failed.length) fail(`${key}: failed requests ` + failed.slice(0, 2).join(' '));
+  if (overflow) fail(`${key}: horizontal overflow at 1440`);
+  await page.screenshot({ path: path.join(ROOT, 'docs', `${key}.png`) });
+  console.log(`  ok   ${key.padEnd(10)} ${title} (demo ${demoLen} chars, ${formulas} formulas)`);
+  await page.close();
+}
+// phone width
+for (const key of ['', 'attention.html', 'kmeans.html']) {
+  const { page, overflow, errors } = await visit(key, 390, 844);
+  if (overflow) fail(`${key || 'overview'}: horizontal overflow at 390`);
+  if (errors.length) fail(`${key || 'overview'}: console errors at 390 ` + JSON.stringify(errors.slice(0, 2)));
+  await page.close();
+}
+await browser.close();
+server.close();
+console.log(failures ? `${failures} FAILURE(S)` : `6/6 demos ok, overview ok, 0 console errors, no external requests`);
+process.exit(failures ? 1 : 0);

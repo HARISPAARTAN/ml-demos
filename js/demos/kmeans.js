@@ -3,7 +3,7 @@
   "use strict";
   window.DEMOS = window.DEMOS || {};
 
-  const COLORS = ["#00ff41", "#00e5ff", "#ffb000", "#ff3333", "#39ff14", "#00d4aa"];
+  const COLORS = ["#F2A93B", "#A78BFA", "#60A5FA", "#F87171", "#3DDC97", "#FB923C"];
 
   function renderDemo(root) {
     root.innerHTML = `
@@ -61,7 +61,7 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const r = 5 * devicePixelRatio;
       for (const p of points) {
-        ctx.fillStyle = p.c == null ? "#5a8a5a" : COLORS[p.c];
+        ctx.fillStyle = p.c == null ? "#5B6472" : COLORS[p.c];
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
         ctx.fill();
@@ -74,7 +74,7 @@
         ctx.moveTo(c.x - s, c.y - s); ctx.lineTo(c.x + s, c.y + s);
         ctx.moveTo(c.x + s, c.y - s); ctx.lineTo(c.x - s, c.y + s);
         ctx.stroke();
-        ctx.strokeStyle = "rgba(255,255,255,.5)";
+        ctx.strokeStyle = (getComputedStyle(document.documentElement).getPropertyValue("--text").trim() || "#fff");
         ctx.lineWidth = devicePixelRatio;
         ctx.beginPath();
         ctx.arc(c.x, c.y, 14 * devicePixelRatio, 0, Math.PI * 2);
@@ -142,7 +142,7 @@
         const moved = stepOnce();
         guard++;
         if (moved && guard < 60) setTimeout(tick, 220);
-        else status.innerHTML += ` — <strong style="color:#00ff41">converged [OK]</strong>`;
+        else status.innerHTML += ` — <strong style="color:#F2A93B">converged [OK]</strong>`;
       };
       tick();
     }
