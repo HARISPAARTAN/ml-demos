@@ -1,0 +1,20 @@
+# Operating system
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors and local tooling
+.vscode/
+.idea/
+.specstory/
+.cursorindexingignore
+_skills-temp/
+
+# Node (the repo has no dependencies; this only guards against a local install)
+node_modules/
+npm-debug.log*
+
+# Local scratch and secrets
+*.log
+tmp/
+.env

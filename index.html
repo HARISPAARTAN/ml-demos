@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ML demos · Harithas Harikaran</title>
+  <meta name="description" content="Six small machine-learning demos with the maths behind them, running in the browser. No server, no tracking." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23050805'/%3E%3Cpath d='M7 10l7 6-7 6M17 23h9' fill='none' stroke='%2300ff41' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="crt-overlay" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <!-- ============ NAV ============ -->
+  <nav class="nav">
+    <div class="nav-inner term-bar">
+      <div class="term-dots"><span></span><span></span><span></span></div>
+      <span class="term-title">harithas@ml-demos — bash</span>
+      <span class="nav-status" id="nav-clock">[SYS: ONLINE]</span>
+    </div>
+    <div class="nav-cmd">
+      <a href="#home" class="logo"><span class="prompt">$</span> harithas<span class="accent">_</span>dev</a>
+      <ul class="nav-links">
+        <li><a href="#projects"><span class="cmd">./projects</span></a></li>
+      </ul>
+      <a href="https://harispaartan.github.io/" class="btn btn-sm">Back to portfolio</a>
+    </div>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <header id="home" class="hero">
+    <div class="hero-bg" id="hero-canvas-wrap"><canvas id="hero-canvas"></canvas></div>
+    <div class="hero-content term-window">
+      <div class="term-bar">
+        <div class="term-dots"><span></span><span></span><span></span></div>
+        <span class="term-title">~/ml-demos — zsh</span>
+      </div>
+      <div class="term-body hero-body">
+        <p class="hero-kicker"><span class="prompt">$</span> cat intro.txt</p>
+        <h1><span class="accent glow">ML demos, in the browser</span></h1>
+        <p class="hero-sub">
+          <span class="prompt">&gt;</span> Six small machine-learning demos with the maths behind them. No server, no tracking.
+        </p>
+        <div class="hero-cta">
+          <a href="#projects" class="btn">$ ls ./projects/</a>
+        </div>
+        <div class="hero-stats">
+          <div><span class="stat-num">6</span><span class="stat-label">binaries</span></div>
+          <div><span class="stat-num">6</span><span class="stat-label">man_pages</span></div>
+        </div>
+        <p class="boot-line" id="boot-line"><span class="cursor-blink">█</span></p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ PROJECTS ============ -->
+    <section id="projects" class="section">
+      <div class="term-window">
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <span class="term-title">01_projects — ls -la ./bin/</span>
+        </div>
+        <div class="term-body">
+          <h2 class="section-title"><span class="section-num">[01]</span> executables</h2>
+          <p class="section-sub"><span class="prompt">$</span> Click any binary to <code>./run --demo</code> or read the <code>man</code> page (math &amp; theory).</p>
+
+          <div class="projects-grid">
+            <article class="project-card" data-project="rag">
+              <div class="project-header">
+                <span class="file-perm">-rwxr-xr-x</span>
+                <span class="file-name">rag_qa_engine</span>
+              </div>
+              <p>Retrieval-Augmented Generation: embed docs → cosine retrieve → ground LLM output in sources.</p>
+              <div class="tags sm"><span>tf-idf</span><span>embeddings</span><span>cosine_sim</span><span>llm</span></div>
+              <span class="card-cta">$ ./rag_qa_engine --demo</span>
+            </article>
+
+            <article class="project-card" data-project="attention">
+              <div class="project-header">
+                <span class="file-perm">-rwxr-xr-x</span>
+                <span class="file-name">attention_viz</span>
+              </div>
+              <p>Self-attention debugger: type a sentence, watch Q·Kᵀ heatmap + softmax weights render live.</p>
+              <div class="tags sm"><span>self_attention</span><span>softmax</span><span>gpt_arch</span></div>
+              <span class="card-cta">$ ./attention_viz --live</span>
+            </article>
+
+            <article class="project-card" data-project="lora">
+              <div class="project-header">
+                <span class="file-perm">-rwxr-xr-x</span>
+                <span class="file-name">lora_calc</span>
+              </div>
+              <p>PEFT memory profiler: tune rank r, model size — watch trainable params &amp; GPU VRAM collapse.</p>
+              <div class="tags sm"><span>peft</span><span>low_rank</span><span>finetune</span><span>qlora</span></div>
+              <span class="card-cta">$ ./lora_calc --rank 16</span>
+            </article>
+
+            <article class="project-card" data-project="gradient">
+              <div class="project-header">
+                <span class="file-perm">-rwxr-xr-x</span>
+                <span class="file-name">grad_descent</span>
+              </div>
+              <p>Optimizer race on a non-convex loss surface. SGD vs Momentum vs Adam — tweak η live.</p>
+              <div class="tags sm"><span>optimization</span><span>sgd</span><span>adam</span><span>loss_surface</span></div>
+              <span class="card-cta">$ ./grad_descent --race</span>
+            </article>
+
+            <article class="project-card" data-project="kmeans">
+              <div class="project-header">
+                <span class="file-perm">-rwxr-xr-x</span>
+                <span class="file-name">kmeans_seg</span>
+              </div>
+              <p>Unsupervised clustering sandbox: drop points, step through Lloyd's algorithm, watch centroids converge.</p>
+              <div class="tags sm"><span>clustering</span><span>unsupervised</span><span>lloyd</span></div>
+              <span class="card-cta">$ ./kmeans_seg --step</span>
+            </article>
+
+            <article class="project-card" data-project="sentiment">
+              <div class="project-header">
+                <span class="file-perm">-rwxr-xr-x</span>
+                <span class="file-name">naive_bayes_nlp</span>
+              </div>
+              <p>From-scratch text classifier: per-word log-odds chips, negation flip, sigmoid verdict.</p>
+              <div class="tags sm"><span>nlp</span><span>bayes</span><span>classification</span></div>
+              <span class="card-cta">$ ./naive_bayes_nlp --analyze</span>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p><a href="https://harispaartan.github.io/">Harithas Harikaran</a> · all demos run client-side</p>
+    <p class="footer-meta">uptime: <span id="footer-uptime">00:00:00</span> · mem: OK · gpu: simulated</p>
+  </footer>
+
+  <!-- ============ PROJECT MODAL ============ -->
+  <div class="modal-overlay" id="modal-overlay" hidden>
+    <div class="modal term-window" role="dialog" aria-modal="true">
+      <div class="term-bar">
+        <div class="term-dots"><span></span><span></span><span></span></div>
+        <span class="term-title" id="modal-title-bar">process — running</span>
+        <button class="modal-close" id="modal-close" aria-label="Close">[x]</button>
+      </div>
+      <div class="modal-head">
+        <h2 id="modal-title"></h2>
+        <div class="modal-tabs">
+          <button class="tab active" data-tab="demo">$ ./run --demo</button>
+          <button class="tab" data-tab="theory">$ man theory</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div id="tab-demo" class="tab-panel active"></div>
+        <div id="tab-theory" class="tab-panel"></div>
+      </div>
+    </div>
+  </div>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script defer src="js/demos/rag.js"></script>
+  <script defer src="js/demos/attention.js"></script>
+  <script defer src="js/demos/lora.js"></script>
+  <script defer src="js/demos/gradient.js"></script>
+  <script defer src="js/demos/kmeans.js"></script>
+  <script defer src="js/demos/sentiment.js"></script>
+  <script defer src="js/main.js"></script>
+</body>
+</html>
